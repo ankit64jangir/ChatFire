@@ -13,7 +13,24 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Run when client connect
 io.on("connection", socket => {
-  console.log("New WS Connection...");
+
+  //Welcome currennt user
+  socket.emit("message", "Welcome to ChatFire!");
+
+  //broadcast when user connects..
+  socket.broadcast.emit("message", "A user has joined");
+
+  //broadcast when user disconnects..
+  socket.on("disconnect", () => {
+    io.emit("message", "A user has left");
+  });
+
+  //listen for chat chatMessage
+  socket.on("chatMessage", (msg) => {
+    io.emit("message", msg);
+  });
+
+
 });
 
 app.get('/', (req, res) => res.send('Hello World!'))
